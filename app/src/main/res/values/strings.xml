@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">MoeGoe</string>
+    <string name="hint">please input text</string>
+    <string name="bg">lavi</string>
+    <string name="jpspkapi">https://moegoe.azurewebsites.net/api/speak?text=%1$s&amp;id=%2$d</string>
+    <string name="krspkapi">https://moegoe.azurewebsites.net/api/speakkr?text=%1$s&amp;id=%2$d</string>
+    <string name="jpspkclnapi">https://moegoe.azurewebsites.net/api/speak?cleantext=%1$s&amp;id=%2$d</string>
+    <string name="krspkclnapi">https://moegoe.azurewebsites.net/api/speakkr?cleantext=%1$s&amp;id=%2$d</string>
+    <string name="jpclnapi">https://moegoe.azurewebsites.net/api/clean?text=%1$s</string>
+    <string name="krclnapi">https://moegoe.azurewebsites.net/api/cleankr?text=%1$s</string>
+</resources>
