@@ -14,13 +14,14 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.cardview.widget.CardView
-import androidx.core.view.setPadding
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.endrnd.view.*
 import kotlinx.android.synthetic.main.startrnd.view.*
 import top.fumiama.moegoe.tools.DownloadTools
 import java.io.File
 import java.net.URLEncoder
+import java.util.concurrent.atomic.AtomicBoolean
+import java.util.concurrent.locks.ReentrantLock
 
 
 class MainActivity : Activity() {
@@ -28,8 +29,8 @@ class MainActivity : Activity() {
     private var speaker = 0
     private var isjp = true
     private var iscleanonly = false
-    private var isdling = false
     private var name = ""
+    private val isPlaying = AtomicBoolean()
     private val spkApiUrl get() = getString(if(isjp) R.string.jpspkapi else R.string.krspkapi)
     private val clnSpkApiUrl get() = getString(if(isjp) R.string.jpspkclnapi else R.string.krspkclnapi)
     private val clnApiUrl get() = getString(if(isjp) R.string.jpclnapi else R.string.krclnapi)
@@ -73,28 +74,18 @@ class MainActivity : Activity() {
                     val adviceName = "${inptxt.text}-${if (isjp) jpspeakers[speaker] else krspeakers[speaker]}.ogg"
                     chat.tl.setTextIsSelectable(false)
                     var hasdata = false
+                    val isDownloading = AtomicBoolean()
                     val mp = MediaPlayer()
                     chat.tl.setOnClickListener onTlClick@ {
-                        if(isdling) {
+                        if(isDownloading.get()) {
                             Toast.makeText(this, "请等待当前计算完成", Toast.LENGTH_SHORT).show()
                             return@onTlClick
                         }
                         if(!hasdata) {
                             Toast.makeText(this, "计算中...", Toast.LENGTH_SHORT).show()
                             chat.pbl.visibility = View.VISIBLE
-                        }
-                        Thread {
-                            try {
-                                if(hasdata) {
-                                    runOnUiThread {
-                                        ObjectAnimator.ofInt(chat.pbl, "progress", 0, 100).setDuration(
-                                                mp.duration.toLong()
-                                        ).start()
-                                    }
-                                    mp.seekTo(0)
-                                    mp.start()
-                                } else if(!isdling) {
-                                    isdling = true
+                            if(isDownloading.compareAndSet(false, true)) Thread {
+                                try {
                                     speaktask.get()?.let {
                                         val n = System.currentTimeMillis().toString()
                                         (externalCacheDir?:cacheDir)?.apply {
@@ -105,11 +96,16 @@ class MainActivity : Activity() {
                                             f.writeBytes(it)
                                             mp.setDataSource(f.absolutePath)
                                             mp.prepare()
-                                            mp.start()
-                                            runOnUiThread {
-                                                ObjectAnimator.ofInt(chat.pbl, "progress", 0, 100).setDuration(
-                                                        mp.duration.toLong()
-                                                ).start()
+                                            mp.setOnCompletionListener {
+                                                isPlaying.set(false)
+                                            }
+                                            if(isPlaying.compareAndSet(false, true)) {
+                                                runOnUiThread {
+                                                    ObjectAnimator.ofInt(chat.pbl, "progress", 0, 100).setDuration(
+                                                            mp.duration.toLong()
+                                                    ).start()
+                                                }
+                                                mp.start()
                                             }
                                             hasdata = true
                                             chat.tl.setOnLongClickListener {
@@ -118,14 +114,24 @@ class MainActivity : Activity() {
                                             }
                                         }
                                     }
-                                    isdling = false
+                                    isDownloading.set(false)
+                                } catch (e: Exception) {
+                                    runOnUiThread{
+                                        Toast.makeText(this, "错误: $e", Toast.LENGTH_SHORT).show()
+                                    }
+                                    isDownloading.set(false)
                                 }
-                            } catch (e: Exception) {
-                                runOnUiThread{
-                                    Toast.makeText(this, "错误: $e", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                        }.start()
+                            }.start()
+                            return@onTlClick
+                        }
+                        if(isPlaying.compareAndSet(false, true)) {
+                            mp.seekTo(0)
+                            ObjectAnimator.ofInt(chat.pbl, "progress", 0, 100).setDuration(
+                                    mp.duration.toLong()
+                            ).start()
+                            mp.start()
+                            return@onTlClick
+                        }
                     }
                 }
                 rchat.tr.text = inptxt.text
