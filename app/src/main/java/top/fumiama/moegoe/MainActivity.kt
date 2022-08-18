@@ -14,6 +14,7 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.cardview.widget.CardView
+import androidx.core.view.setPadding
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.endrnd.view.*
 import kotlinx.android.synthetic.main.startrnd.view.*
@@ -33,6 +34,7 @@ class MainActivity : Activity() {
     private val clnSpkApiUrl get() = getString(if(isjp) R.string.jpspkclnapi else R.string.krspkclnapi)
     private val clnApiUrl get() = getString(if(isjp) R.string.jpclnapi else R.string.krclnapi)
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -57,6 +59,8 @@ class MainActivity : Activity() {
                         }?:"清理失败"
                         runOnUiThread {
                             chat.tl.text = t
+                            val pad = yaru.height * 8 / 64
+                            chat.tl.setPadding(pad, chat.tl.paddingTop, pad, chat.tl.paddingBottom)
                         }
                     }.start()
                 }
@@ -70,7 +74,11 @@ class MainActivity : Activity() {
                     chat.tl.setTextIsSelectable(false)
                     var hasdata = false
                     val mp = MediaPlayer()
-                    chat.tl.setOnClickListener {
+                    chat.tl.setOnClickListener onTlClick@ {
+                        if(isdling) {
+                            Toast.makeText(this, "请等待当前计算完成", Toast.LENGTH_SHORT).show()
+                            return@onTlClick
+                        }
                         if(!hasdata) {
                             Toast.makeText(this, "计算中...", Toast.LENGTH_SHORT).show()
                             chat.pbl.visibility = View.VISIBLE
@@ -80,7 +88,7 @@ class MainActivity : Activity() {
                                 if(hasdata) {
                                     runOnUiThread {
                                         ObjectAnimator.ofInt(chat.pbl, "progress", 0, 100).setDuration(
-                                            mp.duration.toLong()
+                                                mp.duration.toLong()
                                         ).start()
                                     }
                                     mp.seekTo(0)
@@ -100,7 +108,7 @@ class MainActivity : Activity() {
                                             mp.start()
                                             runOnUiThread {
                                                 ObjectAnimator.ofInt(chat.pbl, "progress", 0, 100).setDuration(
-                                                    mp.duration.toLong()
+                                                        mp.duration.toLong()
                                                 ).start()
                                             }
                                             hasdata = true
@@ -195,7 +203,7 @@ class MainActivity : Activity() {
                     if(!firstItem || scroll.getChildAt(0).height > rootView.height) scroll.downToNormal()
                 }
             }
-            if(scroll.maxOverScrollY == 0) scroll.maxOverScrollY = yaru.height / 64 * 150
+            if(scroll.maxOverScrollY == 0) scroll.maxOverScrollY = yaru.height * 128 / 64
         }
     }
 

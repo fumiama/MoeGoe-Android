@@ -1,6 +1,7 @@
 package top.fumiama.moegoe.view
 
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.util.Log
@@ -20,8 +21,7 @@ class OverScrollView: ScrollView {
     )
     var maxOverScrollY = 0
     private fun scrollDelta(deltaY: Int){
-        Log.d("MyOVS", "mY: $maxOverScrollY, tY: $translationY")
-        if((scrollY == getChildAt(0).height - height && deltaY > 0 && -translationY <= maxOverScrollY) || (deltaY < 0 && translationY <= 0 )) translationY -= deltaY
+        translationY -= deltaY
     }
 
     override fun overScrollBy(
@@ -50,6 +50,7 @@ class OverScrollView: ScrollView {
         )
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(ev: MotionEvent?): Boolean {
         if(scrollY == getChildAt(0).height - height || translationY != 0f) ev?.let {
             when(it.action){

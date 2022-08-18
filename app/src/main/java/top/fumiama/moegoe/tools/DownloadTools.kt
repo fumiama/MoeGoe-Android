@@ -1,26 +1,12 @@
 package top.fumiama.moegoe.tools
 
 import android.util.Log
-import top.fumiama.moegoe.tools.ssl.AllTrustManager
-import top.fumiama.moegoe.tools.ssl.IgnoreHostNameVerifier
 import java.net.HttpURLConnection
 import java.net.URL
-import java.security.SecureRandom
 import java.util.concurrent.Callable
 import java.util.concurrent.FutureTask
-import javax.net.ssl.HttpsURLConnection
-import javax.net.ssl.SSLContext
 
 object DownloadTools {
-
-    init {
-        HttpsURLConnection.setDefaultHostnameVerifier(IgnoreHostNameVerifier())
-        HttpsURLConnection.setDefaultSSLSocketFactory(SSLContext.getInstance("SSL").let {
-            it.init(null, arrayOf(AllTrustManager()), SecureRandom())
-            it
-        }.socketFactory)
-    }
-
     private fun getConnection(url: String, method: String = "GET"): HttpURLConnection {
         val connection = URL(url).openConnection() as HttpURLConnection
         connection.requestMethod = method

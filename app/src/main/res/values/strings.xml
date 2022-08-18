@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">MoeGoe</string>
-    <string name="hint">please input text</string>
-    <string name="bg">lavi</string>
+    <string name="hint">请输入文字或[已清理]文本</string>
+    <string name="bg">background</string>
     <string name="jpspkapi">https://moegoe.azurewebsites.net/api/speak?text=%1$s&amp;id=%2$d</string>
     <string name="krspkapi">https://moegoe.azurewebsites.net/api/speakkr?text=%1$s&amp;id=%2$d</string>
     <string name="jpspkclnapi">https://moegoe.azurewebsites.net/api/speak?cleantext=%1$s&amp;id=%2$d</string>

@@ -65,6 +65,7 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginBottom="88dp"
+        android:alpha="0.8"
         android:backgroundTint="@color/colorAccent"
         android:clickable="true"
         android:focusable="true"
