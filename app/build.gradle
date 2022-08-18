@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-android-extensions'
+    id 'AndResGuard'
 }
 
 android {
@@ -19,10 +20,30 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        /*release {
+            storeFile file('../../../OneDrive/swc/developer/android_key/open_key')
+            storePassword 'fumiama'
+            keyAlias 'moegoe'
+            keyPassword 'fumiama'
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }*/
+        winrelease {
+            storeFile file('C:/Users/spayi/OneDrive/swc/developer/android_key/open_key')
+            storePassword 'fumiama'
+            keyAlias 'moegoe'
+            keyPassword 'fumiama'
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled true
             shrinkResources true
+            signingConfig signingConfigs.winrelease
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -45,4 +66,45 @@ dependencies {
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+}
+
+andResGuard {
+    // mappingFile = file("./resource_mapping.txt")
+    mappingFile = null
+    use7zip = true
+    useSign = true
+    // It will keep the origin path of your resources when it's true
+    keepRoot = false
+    // If set, name column in arsc those need to proguard will be kept to this value
+    fixedResName = "arg"
+    // It will merge the duplicated resources, but don't rely on this feature too much.
+    // it's always better to remove duplicated resource from repo
+    mergeDuplicatedRes = true
+    whiteList = [
+            "R.drawable.load",
+            // your icon
+            "R.drawable.icon",
+            // for fabric
+            "R.string.com.crashlytics.*",
+            // for google-services
+            "R.string.google_app_id",
+            "R.string.gcm_defaultSenderId",
+            "R.string.default_web_client_id",
+            "R.string.ga_trackingId",
+            "R.string.firebase_database_url",
+            "R.string.google_api_key",
+            "R.string.google_crash_reporting_api_key"
+    ]
+    compressFilePattern = [
+            "*.png",
+            "*.jpg",
+            "*.jpeg",
+            "*.gif",
+            "resources.arsc"
+    ]
+    finalApkBackupPath = "${project.rootDir}/final.apk"
+    sevenzip {
+        artifact = 'com.tencent.mm:SevenZip:1.2.21'
+        //path = "/usr/local/bin/7za"
+    }
 }
