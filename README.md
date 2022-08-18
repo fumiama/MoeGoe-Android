@@ -26,7 +26,7 @@
 <table>
 	<tr>
 		<td align="center"><img src="https://user-images.githubusercontent.com/41315874/185280364-7e8aeac4-0cd6-49af-8ffa-ace192a5bfaf.png"></td>
-		<td align="center"><img src="https://user-images.githubusercontent.com/41315874/185280369-247ce438-da6a-446b-9f66-f6a4627e41de.png"></td>
+		<td align="center"><img src="https://user-images.githubusercontent.com/41315874/185303195-b23cebf5-295b-4602-96c1-aee58150d67e.png"></td>
     <td align="center"><img src="https://user-images.githubusercontent.com/41315874/185280381-3baf9b33-d02c-4f80-b7bf-11d53601580a.png"></td>
 	</tr>
     <tr>
